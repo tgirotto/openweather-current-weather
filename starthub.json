@@ -1,0 +1,149 @@
+{
+  "name": "openweather-current-weather",
+  "description": "Get current weather data from OpenWeather API",
+  "version": "0.0.1",
+  "kind": "composition",
+  "manifest_version": 1,
+  "repository": "github.com/tgirotto/openweather-current-weather",
+  "license": "MIT",
+  "inputs": [
+    {
+      "name": "lat",
+      "description": "Latitude of the location",
+      "type": "number",
+      "required": true,
+      "default": null
+    },
+    {
+      "name": "lon",
+      "description": "Longitude of the location",
+      "type": "number",
+      "required": true,
+      "default": null
+    },
+    {
+      "name": "open_weather_api_key",
+      "description": "OpenWeatherMap API key",
+      "type": "string",
+      "required": true,
+      "default": null
+    }
+  ],
+  "steps": [
+    {
+      "id": "get_weather_response",
+      "uses": "starthubhq/http-get-wasm:0.0.16",
+      "types" : {
+        "HttpResponse": {
+          "status": "number",
+          "body": "string"
+        }
+      },
+      "inputs": [
+        {
+          "type": "string",
+          "value": "https://api.openweathermap.org/data/2.5/weather?lat={{inputs.lat}}&lon={{inputs.lon}}&appid={{inputs.open_weather_api_key}}"
+        }
+      ],
+      "outputs": [
+        "HttpResponse"
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "{{get_weather_response.body.name}}",
+      "type": "WeatherResponse",
+      "value": {
+        "coord": {
+          "lon": "{{get_weather_response.body.coord.lon}}",
+          "lat": "{{get_weather_response.body.coord.lat}}"
+        },
+        "weather": [
+          {
+            "id": "{{get_weather_response.body.weather[0].id}}",
+            "main": "{{get_weather_response.body.weather[0].main}}",
+            "description": "{{get_weather_response.body.weather[0].description}}",
+            "icon": "{{get_weather_response.body.weather[0].icon}}"
+          }
+        ],
+        "base": "{{get_weather_response.body.base}}",
+        "main": {
+          "temp": "{{get_weather_response.body.main.temp}}",
+          "feels_like": "{{get_weather_response.body.main.feels_like}}",
+          "temp_min": "{{get_weather_response.body.main.temp_min}}",
+          "temp_max": "{{get_weather_response.body.main.temp_max}}",
+          "pressure": "{{get_weather_response.body.main.pressure}}",
+          "humidity": "{{get_weather_response.body.main.humidity}}",
+          "sea_level": "{{get_weather_response.body.main.sea_level}}",
+          "grnd_level": "{{get_weather_response.body.main.grnd_level}}"
+        },
+        "visibility": "{{get_weather_response.body.visibility}}",
+        "wind": {
+          "speed": "{{get_weather_response.body.wind.speed}}",
+          "deg": "{{get_weather_response.body.wind.deg}}",
+          "gust": "{{get_weather_response.body.wind.gust}}"
+        },
+        "clouds": {
+          "all": "{{get_weather_response.body.clouds.all}}"
+        },
+        "dt": "{{get_weather_response.body.dt}}",
+        "sys": {
+          "country": "{{get_weather_response.body.sys.country}}",
+          "sunrise": "{{get_weather_response.body.sys.sunrise}}",
+          "sunset": "{{get_weather_response.body.sys.sunset}}"
+        },
+        "timezone": "{{get_weather_response.body.timezone}}",
+        "id": "{{get_weather_response.body.id}}",
+        "name": "{{get_weather_response.body.name}}",
+        "cod": "{{get_weather_response.body.cod}}"
+      }
+    }
+  ],
+  "types": {
+    "WeatherResponse": {
+      "coord": {
+        "lon": "number",
+        "lat": "number"
+      },
+      "weather": [
+        {
+          "id": "number",
+          "main": "string",
+          "description": "string",
+          "icon": "string"
+        }
+      ],
+      "base": "string",
+      "main": {
+        "temp": "number",
+        "feels_like": "number",
+        "temp_min": "number",
+        "temp_max": "number",
+        "pressure": "number",
+        "humidity": "number",
+        "sea_level": "number",
+        "grnd_level": "number"
+      },
+      "visibility": "number",
+      "wind": {
+        "speed": "number",
+        "deg": "number",
+        "gust": "number"
+      },
+      "clouds": {
+        "all": "number"
+      },
+      "dt": "number",
+      "sys": {
+        "country": "string",
+        "sunrise": "number",
+        "sunset": "number"
+      },
+      "timezone": "number",
+      "id": "number",
+      "name": "string",
+      "cod": "number"
+    }
+  }
+}
