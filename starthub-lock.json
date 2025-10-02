@@ -8,99 +8,114 @@
   "license": "MIT",
   "inputs": [
     {
-      "name": "lat",
-      "description": "Latitude of the location",
-      "type": "number",
-      "required": true,
-      "default": null
-    },
-    {
-      "name": "lon",
-      "description": "Longitude of the location",
-      "type": "number",
-      "required": true,
-      "default": null
-    },
-    {
-      "name": "open_weather_api_key",
-      "description": "OpenWeatherMap API key",
-      "type": "string",
-      "required": true,
-      "default": null
+      "name": "weather_config",
+      "type": "WeatherConfig",
+      "required": true
     }
   ],
-  "steps": [
-    {
-      "id": "get_weather_response",
+  "steps": {
+    "get_weather_response": {
       "uses": "starthubhq/http-get-wasm:0.0.16",
       "types" : {
+        "HttpHeaders": {
+          "Content-Type": "string",
+          "Authorization": "string"
+        },
         "HttpResponse": {
           "status": "number",
-          "body": "string"
+          "body": "object"
         }
       },
       "inputs": [
         {
+          "name": "url",
           "type": "string",
-          "value": "https://api.openweathermap.org/data/2.5/weather?lat={{inputs.lat}}&lon={{inputs.lon}}&appid={{inputs.open_weather_api_key}}"
+          "value": "https://api.openweathermap.org/data/2.5/weather?lat={{inputs[0].lat}}&lon={{inputs[0].lon}}&appid={{inputs[0].open_weather_api_key}}"
+        },
+        {
+          "name": "headers",
+          "type": "HttpHeaders",
+          "value": {
+            "Content-Type": "application/json"
+          }
         }
       ],
       "outputs": [
-        "HttpResponse"
+        {
+          "name": "response",
+          "type": "HttpResponse"
+        }
       ]
     }
-  ],
+  },
   "outputs": [
     {
-      "name": "{{get_weather_response.body.name}}",
+      "name": "weather",
       "type": "WeatherResponse",
       "value": {
         "coord": {
-          "lon": "{{get_weather_response.body.coord.lon}}",
-          "lat": "{{get_weather_response.body.coord.lat}}"
+          "lon": "{{steps.get_weather_response.outputs[0].body.coord.lon}}",
+          "lat": "{{steps.get_weather_response.outputs[0].body.coord.lat}}"
         },
         "weather": [
           {
-            "id": "{{get_weather_response.body.weather[0].id}}",
-            "main": "{{get_weather_response.body.weather[0].main}}",
-            "description": "{{get_weather_response.body.weather[0].description}}",
-            "icon": "{{get_weather_response.body.weather[0].icon}}"
+            "id": "{{steps.get_weather_response.outputs[0].body.weather[0].id}}",
+            "main": "{{steps.get_weather_response.outputs[0].body.weather[0].main}}",
+            "description": "{{steps.get_weather_response.outputs[0].body.weather[0].description}}",
+            "icon": "{{steps.get_weather_response.outputs[0].body.weather[0].icon}}"
           }
         ],
-        "base": "{{get_weather_response.body.base}}",
+        "base": "{{steps.get_weather_response.outputs[0].body.base}}",
         "main": {
-          "temp": "{{get_weather_response.body.main.temp}}",
-          "feels_like": "{{get_weather_response.body.main.feels_like}}",
-          "temp_min": "{{get_weather_response.body.main.temp_min}}",
-          "temp_max": "{{get_weather_response.body.main.temp_max}}",
-          "pressure": "{{get_weather_response.body.main.pressure}}",
-          "humidity": "{{get_weather_response.body.main.humidity}}",
-          "sea_level": "{{get_weather_response.body.main.sea_level}}",
-          "grnd_level": "{{get_weather_response.body.main.grnd_level}}"
+          "temp": "{{steps.get_weather_response.outputs[0].body.main.temp}}",
+          "feels_like": "{{steps.get_weather_response.outputs[0].body.main.feels_like}}",
+          "temp_min": "{{steps.get_weather_response.outputs[0].body.main.temp_min}}",
+          "temp_max": "{{steps.get_weather_response.outputs[0].body.main.temp_max}}",
+          "pressure": "{{steps.get_weather_response.outputs[0].body.main.pressure}}",
+          "humidity": "{{steps.get_weather_response.outputs[0].body.main.humidity}}",
+          "sea_level": "{{steps.get_weather_response.outputs[0].body.main.sea_level}}",
+          "grnd_level": "{{steps.get_weather_response.outputs[0].body.main.grnd_level}}"
         },
-        "visibility": "{{get_weather_response.body.visibility}}",
+        "visibility": "{{steps.get_weather_response.outputs[0].body.visibility}}",
         "wind": {
-          "speed": "{{get_weather_response.body.wind.speed}}",
-          "deg": "{{get_weather_response.body.wind.deg}}",
-          "gust": "{{get_weather_response.body.wind.gust}}"
+          "speed": "{{steps.get_weather_response.outputs[0].body.wind.speed}}",
+          "deg": "{{steps.get_weather_response.outputs[0].body.wind.deg}}",
+          "gust": "{{steps.get_weather_response.outputs[0].body.wind.gust}}"
         },
         "clouds": {
-          "all": "{{get_weather_response.body.clouds.all}}"
+          "all": "{{steps.get_weather_response.outputs[0].body.clouds.all}}"
         },
-        "dt": "{{get_weather_response.body.dt}}",
+        "dt": "{{steps.get_weather_response.outputs[0].body.dt}}",
         "sys": {
-          "country": "{{get_weather_response.body.sys.country}}",
-          "sunrise": "{{get_weather_response.body.sys.sunrise}}",
-          "sunset": "{{get_weather_response.body.sys.sunset}}"
+          "country": "{{steps.get_weather_response.outputs[0].body.sys.country}}",
+          "sunrise": "{{steps.get_weather_response.outputs[0].body.sys.sunrise}}",
+          "sunset": "{{steps.get_weather_response.outputs[0].body.sys.sunset}}"
         },
-        "timezone": "{{get_weather_response.body.timezone}}",
-        "id": "{{get_weather_response.body.id}}",
-        "name": "{{get_weather_response.body.name}}",
-        "cod": "{{get_weather_response.body.cod}}"
+        "timezone": "{{steps.get_weather_response.outputs[0].body.timezone}}",
+        "id": "{{steps.get_weather_response.outputs[0].body.id}}",
+        "name": "{{steps.get_weather_response.outputs[0].body.name}}",
+        "cod": "{{steps.get_weather_response.outputs[0].body.cod}}"
       }
     }
   ],
   "types": {
+    "WeatherConfig": {
+      "lat": {
+        "description": "Latitude of the location",
+        "type": "string",
+        "required": true
+      },
+      "lon": {
+        "description": "Longitude of the location", 
+        "type": "string",
+        "required": true
+      },
+      "open_weather_api_key": {
+        "description": "OpenWeatherMap API key",
+        "type": "string",
+        "required": true
+      }
+    },
     "WeatherResponse": {
       "coord": {
         "lon": "number",
