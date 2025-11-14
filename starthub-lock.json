@@ -15,35 +15,11 @@
   ],
   "steps": {
     "get_weather_response": {
-      "uses": "starthubhq/http-get-wasm:0.0.16",
-      "types" : {
-        "HttpHeaders": {
-          "Content-Type": "string",
-          "Authorization": "string"
-        },
-        "HttpResponse": {
-          "status": "number",
-          "body": "object"
-        }
-      },
+      "uses": "starthubhq/http-get-wasm:0.0.17",
       "inputs": [
+        "https://api.openweathermap.org/data/2.5/weather?lat={{inputs[0].lat}}&lon={{inputs[0].lon}}&appid={{inputs[0].open_weather_api_key}}",
         {
-          "name": "url",
-          "type": "string",
-          "value": "https://api.openweathermap.org/data/2.5/weather?lat={{inputs[0].lat}}&lon={{inputs[0].lon}}&appid={{inputs[0].open_weather_api_key}}"
-        },
-        {
-          "name": "headers",
-          "type": "HttpHeaders",
-          "value": {
-            "Content-Type": "application/json"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "response",
-          "type": "HttpResponse"
+          "Content-Type": "application/json"
         }
       ]
     }
@@ -79,8 +55,7 @@
         "visibility": "{{steps.get_weather_response.outputs[0].body.visibility}}",
         "wind": {
           "speed": "{{steps.get_weather_response.outputs[0].body.wind.speed}}",
-          "deg": "{{steps.get_weather_response.outputs[0].body.wind.deg}}",
-          "gust": "{{steps.get_weather_response.outputs[0].body.wind.gust}}"
+          "deg": "{{steps.get_weather_response.outputs[0].body.wind.deg}}"
         },
         "clouds": {
           "all": "{{steps.get_weather_response.outputs[0].body.clouds.all}}"
@@ -100,21 +75,9 @@
   ],
   "types": {
     "WeatherConfig": {
-      "lat": {
-        "description": "Latitude of the location",
-        "type": "string",
-        "required": true
-      },
-      "lon": {
-        "description": "Longitude of the location", 
-        "type": "string",
-        "required": true
-      },
-      "open_weather_api_key": {
-        "description": "OpenWeatherMap API key",
-        "type": "string",
-        "required": true
-      }
+      "lat": "number",
+      "lon": "number",
+      "open_weather_api_key": "string"
     },
     "WeatherResponse": {
       "coord": {
@@ -160,5 +123,8 @@
       "name": "string",
       "cod": "number"
     }
-  }
+  },
+  "mirrors": [
+    "https://api.starthub.so/storage/v1/object/public/artifacts/std/openweather-current-weather/0.0.1/artifact.zip"
+  ]
 }
